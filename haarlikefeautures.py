@@ -44,6 +44,9 @@ class HaarLikefeatures:
         sum: int
              sum of the pixels inside the original image rectangle
         """
+        if start_row+h >= len(integral_image) or start_col+w >= len(integral_image[0]):
+            return 0
+
         start_row, start_col, w, h = \
             int(start_row), int(start_col), int(w), int(h)
         sum = integral_image[start_row+h, start_col+w] + \
@@ -135,14 +138,16 @@ class HaarLikefeatures:
 
         features = np.array([]).reshape(0, 5)
         for haar_type in range(len(HaarFeautureTypes)):
-            wndx, wndy = self.haar_window[haar_type]
-            for w in range(wndx, width+1, wndx):
-                for h in range(wndy, height+1, wndy):
-                    for x in range(start_col, start_col+width-w+1):
-                        for y in range(start_row, start_row+height-h+1):
+            wnd_row, wnd_col = self.haar_window[haar_type]
+            for h in range(wnd_row, height+1, wnd_row):
+                for w in range(wnd_col, width+1, wnd_col):
+                    print(str(h)+" "+str(w))
+                    for x in range(start_row, start_row+height-h+1):
+                        for y in range(start_col, start_col+width-w+1):
                             features = np.append(
-                                features, [[haar_type, x, y, w, h]], axis=0)
+                                features, [[haar_type, x, y, h, w]], axis=0)
 
+        print(features)
         features_values = np.zeros((len(features)))
         integral_image = self.utils.get_integral_image(original_image)
         for i in range(len(features)):
@@ -156,3 +161,13 @@ class HaarLikefeatures:
             )
 
         return features_values
+
+
+# utils = Utils()
+# integral_image = utils.get_integral_image(
+#     np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+# print(integral_image)
+haar_like_feautures = HaarLikefeatures()
+# print(feauture.__get_sum_in_rectangle(integral_image, 0, 0, 2, 2))
+print(haar_like_feautures.extract_features(
+    np.array([[8, 2, 3], [4, 5, 6], [7, 8, 9]]), 0, 0, 2, 2))
