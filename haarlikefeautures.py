@@ -44,8 +44,8 @@ class HaarLikefeatures:
         sum: int
              sum of the pixels inside the original image rectangle
         """
-        if start_row+h >= len(integral_image) or start_col+w >= len(integral_image[0]):
-            return 0
+        # if start_row+h >= len(integral_image) or start_col+w >= len(integral_image[0]):
+        #     return 0
 
         start_row, start_col, w, h = \
             int(start_row), int(start_col), int(w), int(h)
@@ -78,39 +78,40 @@ class HaarLikefeatures:
         """
         black = 0
         white = 0
-        if feauture_type == HaarFeautureTypes.TWO_HORIZONTAL:
-            black = self.__get_sum_in_rectangle(
-                integral_image, start_row, start_col, w, h/2)
-            white = self.__get_sum_in_rectangle(
-                integral_image, start_row+h/2, start_col, w, h/2)
-        elif feauture_type == HaarFeautureTypes.TWO_VERTICAL:
-            white = self.__get_sum_in_rectangle(
-                integral_image, start_row, start_col, w/2, h)
-            black = self.__get_sum_in_rectangle(
-                integral_image, start_row, start_col + w/2, w/2, h)
-        elif feauture_type == HaarFeautureTypes.THREE_HORIZONTAL:
-            white = self.__get_sum_in_rectangle(
-                integral_image, start_row, start_col, w, h/3) + \
-                self.__get_sum_in_rectangle(
-                    integral_image, start_row+(2*h/3), start_col, w, h/3)
-            black = self.__get_sum_in_rectangle(
-                integral_image, start_row+(h/3), start_col, w, h/3)
-        elif feauture_type == HaarFeautureTypes.THREE_VERTICAL:
-            white = self.__get_sum_in_rectangle(
-                integral_image, start_row, start_col, w/3, h) + \
-                self.__get_sum_in_rectangle(
-                    integral_image, start_row, start_col+(2*w/3), w/3, h)
-            black = self.__get_sum_in_rectangle(
-                integral_image, start_row, start_col+(w/3), w/3, h)
-        elif feauture_type == HaarFeautureTypes.FOUR_DIAGONAL:
-            white = self.__get_sum_in_rectangle(
-                integral_image, start_row, start_col, w/2, h/2) + \
-                self.__get_sum_in_rectangle(
-                    integral_image, start_row+h/2, start_col+w/2, w/2, h/2)
-            black = self.__get_sum_in_rectangle(
-                integral_image, start_row+w/2, start_col, w/2, h/2) + \
-                self.__get_sum_in_rectangle(
-                    integral_image, start_row+h/2, start_col, w/2, h/2)
+        try:
+            if feauture_type == HaarFeautureTypes.TWO_HORIZONTAL:
+                black = self.__get_sum_in_rectangle(
+                    integral_image, start_row, start_col, w, h/2)
+                white = self.__get_sum_in_rectangle(
+                    integral_image, start_row+h/2, start_col, w, h/2)
+            elif feauture_type == HaarFeautureTypes.TWO_VERTICAL:
+                white = self.__get_sum_in_rectangle(
+                    integral_image, start_row, start_col, w/2, h)
+                black = self.__get_sum_in_rectangle(
+                    integral_image, start_row, start_col + w/2, w/2, h)
+            elif feauture_type == HaarFeautureTypes.THREE_HORIZONTAL:
+                white = self.__get_sum_in_rectangle(integral_image, start_row, start_col, w, h/3) + \
+                    self.__get_sum_in_rectangle(
+                        integral_image, start_row+(2*h/3), start_col, w, h/3)
+                black = self.__get_sum_in_rectangle(
+                    integral_image, start_row+(h/3), start_col, w, h/3)
+            elif feauture_type == HaarFeautureTypes.THREE_VERTICAL:
+                white = self.__get_sum_in_rectangle(integral_image, start_row, start_col, w/3, h) + \
+                    self.__get_sum_in_rectangle(
+                        integral_image, start_row, start_col+(2*w/3), w/3, h)
+                black = self.__get_sum_in_rectangle(
+                    integral_image, start_row, start_col+(w/3), w/3, h)
+            elif feauture_type == HaarFeautureTypes.FOUR_DIAGONAL:
+                white = self.__get_sum_in_rectangle(integral_image, start_row, start_col, w/2, h/2) + \
+                    self.__get_sum_in_rectangle(
+                        integral_image, start_row+h/2, start_col+w/2, w/2, h/2)
+                black = self.__get_sum_in_rectangle(integral_image, start_row+w/2, start_col, w/2, h/2) + \
+                    self.__get_sum_in_rectangle(
+                        integral_image, start_row+h/2, start_col, w/2, h/2)
+        except Exception as e:
+            print(e)
+            print("Feauture type is {} , start row= {}, start col= {}, height= {}, width= {}".format(
+                feauture_type, start_row, start_col, h, w))
 
         feauture_value = white-black
         return feauture_value
@@ -135,17 +136,30 @@ class HaarLikefeatures:
         features_values: np.array
             contanins the extracted features values 
         """
+        if len(original_image) == 0:
+            print("Original image array is empty")
+            return
+
+        if height <= 0 or width <= 0:
+            print("One or both of the window dimensions is zero or negative")
+            return
+
+        if start_row+height > len(original_image) or start_col+width > len(original_image[0]):
+            print("Window is out of original image's bounds")
+            return
 
         features = np.array([]).reshape(0, 5)
         for haar_type in range(len(HaarFeautureTypes)):
             wnd_row, wnd_col = self.haar_window[haar_type]
-            for h in range(wnd_row, height+1, wnd_row):
-                for w in range(wnd_col, width+1, wnd_col):
-                    print(str(h)+" "+str(w))
-                    for x in range(start_row, start_row+height-h+1):
-                        for y in range(start_col, start_col+width-w+1):
-                            features = np.append(
-                                features, [[haar_type, x, y, h, w]], axis=0)
+            h, w = wnd_row, wnd_col
+            while h <= height and w <= width:
+                print(str(h)+" "+str(w))
+                for x in range(start_row, start_row+height-h+1):
+                    for y in range(start_col, start_col+width-w+1):
+                        features = np.append(
+                            features, [[haar_type, x, y, h, w]], axis=0)
+                h += wnd_row
+                w += wnd_col
 
         print(features)
         features_values = np.zeros((len(features)))
@@ -156,8 +170,8 @@ class HaarLikefeatures:
                 HaarFeautureTypes(features[i][0]),
                 features[i][1],
                 features[i][2],
-                features[i][3],
-                features[i][4]
+                features[i][4],
+                features[i][3]
             )
 
         return features_values
@@ -170,4 +184,4 @@ class HaarLikefeatures:
 haar_like_feautures = HaarLikefeatures()
 # print(feauture.__get_sum_in_rectangle(integral_image, 0, 0, 2, 2))
 print(haar_like_feautures.extract_features(
-    np.array([[8, 2, 3], [4, 5, 6], [7, 8, 9]]), 0, 0, 2, 2))
+    np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), 0, 0, 3, 3))
