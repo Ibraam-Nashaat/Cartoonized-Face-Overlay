@@ -44,18 +44,12 @@ class HaarLikeFeatures:
         sum: int
              sum of the pixels inside the original image rectangle
         """
-        # if start_row+h >= len(integral_image) or start_col+w >= len(integral_image[0]):
-        #     return 0
-
         start_row, start_col, w, h = \
             int(start_row), int(start_col), int(w), int(h)
-        print("start row= {}, start col= {}, height= {}, width= {}".format(
-            start_row, start_col, h, w))
         sum = integral_image[start_row+h, start_col+w] + \
             integral_image[start_row, start_col] - \
             integral_image[start_row+h, start_col] - \
             integral_image[start_row, start_col+w]
-        print(sum)
         return int(sum)
 
     def __get_feauture_value(self, integral_image, feauture_type, start_row, start_col, w, h):
@@ -87,8 +81,6 @@ class HaarLikeFeatures:
                     integral_image, start_row, start_col, w, h/2)
                 black = self.__get_sum_in_rectangle(
                     integral_image, start_row+h/2, start_col, w, h/2)
-                print("white {},black {} , start row= {}, start col= {}, height= {}, width= {}".format(
-                    white, black, start_row, start_col, h, w))
             elif feauture_type == HaarFeautureTypes.TWO_VERTICAL:
                 white = self.__get_sum_in_rectangle(
                     integral_image, start_row, start_col, w/2, h)
@@ -158,7 +150,6 @@ class HaarLikeFeatures:
             wnd_row, wnd_col = self.haar_window[haar_type]
             h, w = wnd_row, wnd_col
             while h <= height and w <= width:
-                #    print(str(h)+" "+str(w))
                 for x in range(start_row, start_row+height-h+1):
                     for y in range(start_col, start_col+width-w+1):
                         features = np.append(
@@ -166,10 +157,8 @@ class HaarLikeFeatures:
                 h += wnd_row
                 w += wnd_col
 
-        print(features)
         features_values = np.zeros((len(features)))
         integral_image = self.utils.get_integral_image(original_image)
-        print(integral_image)
         for i in range(len(features)):
             features_values[i] = self.__get_feauture_value(
                 integral_image,
