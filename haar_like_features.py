@@ -172,18 +172,3 @@ class HaarLikeFeatures:
         features_values = np.array(features_values, dtype=int)
 
         return features_values
-
-
-utils = Utils()
-# integral_image = utils.get_integral_image(
-#     np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]]))
-# print(integral_image)
-haar_like_feautures = HaarLikeFeatures()
-# print(haar_like_feautures.get_sum_in_rectangle(integral_image, 0, 0, 1, 1))
-
-utils = Utils()
-integral_image = utils.get_integral_image(
-    np.array([[1, 5, 7], [9, 11, 8], [3, 2, 5]]))
-# integral_image = np.array(integral_image, dtype=int)
-print(haar_like_feautures.extract_features(
-    np.array([[1, 5, 7, 2], [9, 11, 8, 3], [3, 2, 5, 6], [10, 9, 8, 7]]), 0, 0, 4, 4))

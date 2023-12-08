@@ -26,7 +26,3 @@ class Utils:
                                                                              j-1]-integral_image[i-1, j-1]+original_image[i-1, j-1]
 
         return integral_image
-
-
-# utils = Utils()
-# # print(utils.get_integral_image(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])))
