@@ -2,6 +2,8 @@ import skimage.io as io
 from skimage.color import rgb2gray
 import numpy as np
 from haar_like_features import *
+from errors import *
+import pytest
 
 
 def test_haar_like_feautures_4x4_matched():
@@ -53,3 +55,49 @@ def test_haar_like_feautures_on_real_image():
     haar_like_feautures = HaarLikeFeatures()
     features = np.array(haar_like_feautures.extract_features(
         image, 0, 0, 10, 15), dtype=int)
+
+
+def test_haar_like_feautures_empty_image():
+    image = np.array([])
+    haar_like_feautures = HaarLikeFeatures()
+    errors = Errors()
+
+    with pytest.raises(ValueError, match=errors.get_empty_image_message()):
+        features = np.array(haar_like_feautures.extract_features(
+            image, 0, 0, 3, 3), dtype=int)
+
+
+def test_haar_like_feautures_negative_window_dimension():
+    image = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+    haar_like_feautures = HaarLikeFeatures()
+    errors = Errors()
+
+    with pytest.raises(ValueError, match=errors.get_negative_dimensions_message()):
+        features = np.array(haar_like_feautures.extract_features(
+            image, 0, 0, -1, 3), dtype=int)
+
+    with pytest.raises(ValueError, match=errors.get_negative_dimensions_message()):
+        features = np.array(haar_like_feautures.extract_features(
+            image, 0, 0, 3, -1), dtype=int)
+
+    with pytest.raises(ValueError, match=errors.get_negative_dimensions_message()):
+        features = np.array(haar_like_feautures.extract_features(
+            image, 0, 0, -1, -2), dtype=int)
+
+
+def test_haar_like_feautures_window_outside_image_bounds():
+    image = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+    haar_like_feautures = HaarLikeFeatures()
+    errors = Errors()
+
+    with pytest.raises(ValueError, match=errors.get_window_out_of_bounds_message()):
+        features = np.array(haar_like_feautures.extract_features(
+            image, 0, 0, 4, 3), dtype=int)
+
+    with pytest.raises(ValueError, match=errors.get_window_out_of_bounds_message()):
+        features = np.array(haar_like_feautures.extract_features(
+            image, 0, 0, 3, 4), dtype=int)
+
+    with pytest.raises(ValueError, match=errors.get_window_out_of_bounds_message()):
+        features = np.array(haar_like_feautures.extract_features(
+            image, 0, 0, 4, 4), dtype=int)

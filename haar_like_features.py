@@ -2,6 +2,7 @@ import numpy as np
 from utils import *
 from enum import Enum
 from math import ceil
+from errors import *
 
 
 class HaarFeautureTypes(Enum):
@@ -24,6 +25,7 @@ class HaarLikeFeatures:
         ]
 
         self.utils = Utils()
+        self.errors = Errors()
 
     def __get_sum_in_rectangle(self, integral_image, start_row, start_col, w, h):
         """
@@ -134,16 +136,13 @@ class HaarLikeFeatures:
             contanins the extracted features values 
         """
         if len(original_image) == 0:
-            print("Original image array is empty")
-            return
+            raise ValueError(self.errors.get_empty_image_message())
 
         if height <= 0 or width <= 0:
-            print("One or both of the window dimensions is zero or negative")
-            return
+            raise ValueError(self.errors.get_negative_dimensions_message())
 
         if start_row+height > len(original_image) or start_col+width > len(original_image[0]):
-            print("Window is out of original image's bounds")
-            return
+            raise ValueError(self.errors.get_window_out_of_bounds_message())
 
         features = np.array([]).reshape(0, 5)
         for haar_type in range(len(HaarFeautureTypes)):
