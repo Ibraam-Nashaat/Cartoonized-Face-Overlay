@@ -45,3 +45,11 @@ def test_haar_like_feautures_3x3_matched_t2():
 
     assert np.array_equal(features,
                           expected_features), "Haar Features do not match!"
+
+
+def test_haar_like_feautures_on_real_image():
+    image = io.imread("Images/hermoine.jpg")
+    image = (rgb2gray(image)*255).astype('uint8')
+    haar_like_feautures = HaarLikeFeatures()
+    features = np.array(haar_like_feautures.extract_features(
+        image, 0, 0, 10, 15), dtype=int)
