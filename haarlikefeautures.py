@@ -12,7 +12,7 @@ class HaarFeautureTypes(Enum):
     FOUR_DIAGONAL = 4
 
 
-class HaarLikefeatures:
+class HaarLikeFeatures:
 
     def __init__(self):
         self.haar_window = [
@@ -49,10 +49,13 @@ class HaarLikefeatures:
 
         start_row, start_col, w, h = \
             int(start_row), int(start_col), int(w), int(h)
+        print("start row= {}, start col= {}, height= {}, width= {}".format(
+            start_row, start_col, h, w))
         sum = integral_image[start_row+h, start_col+w] + \
             integral_image[start_row, start_col] - \
             integral_image[start_row+h, start_col] - \
             integral_image[start_row, start_col+w]
+        print(sum)
         return int(sum)
 
     def __get_feauture_value(self, integral_image, feauture_type, start_row, start_col, w, h):
@@ -80,10 +83,12 @@ class HaarLikefeatures:
         white = 0
         try:
             if feauture_type == HaarFeautureTypes.TWO_HORIZONTAL:
-                black = self.__get_sum_in_rectangle(
-                    integral_image, start_row, start_col, w, h/2)
                 white = self.__get_sum_in_rectangle(
+                    integral_image, start_row, start_col, w, h/2)
+                black = self.__get_sum_in_rectangle(
                     integral_image, start_row+h/2, start_col, w, h/2)
+                print("white {},black {} , start row= {}, start col= {}, height= {}, width= {}".format(
+                    white, black, start_row, start_col, h, w))
             elif feauture_type == HaarFeautureTypes.TWO_VERTICAL:
                 white = self.__get_sum_in_rectangle(
                     integral_image, start_row, start_col, w/2, h)
@@ -105,9 +110,9 @@ class HaarLikefeatures:
                 white = self.__get_sum_in_rectangle(integral_image, start_row, start_col, w/2, h/2) + \
                     self.__get_sum_in_rectangle(
                         integral_image, start_row+h/2, start_col+w/2, w/2, h/2)
-                black = self.__get_sum_in_rectangle(integral_image, start_row+w/2, start_col, w/2, h/2) + \
+                black = self.__get_sum_in_rectangle(integral_image, start_row+h/2, start_col, w/2, h/2) + \
                     self.__get_sum_in_rectangle(
-                        integral_image, start_row+h/2, start_col, w/2, h/2)
+                        integral_image, start_row, start_col+w/2, w/2, h/2)
         except Exception as e:
             print(e)
             print("Feauture type is {} , start row= {}, start col= {}, height= {}, width= {}".format(
@@ -153,7 +158,7 @@ class HaarLikefeatures:
             wnd_row, wnd_col = self.haar_window[haar_type]
             h, w = wnd_row, wnd_col
             while h <= height and w <= width:
-                print(str(h)+" "+str(w))
+                #    print(str(h)+" "+str(w))
                 for x in range(start_row, start_row+height-h+1):
                     for y in range(start_col, start_col+width-w+1):
                         features = np.append(
@@ -164,6 +169,7 @@ class HaarLikefeatures:
         print(features)
         features_values = np.zeros((len(features)))
         integral_image = self.utils.get_integral_image(original_image)
+        print(integral_image)
         for i in range(len(features)):
             features_values[i] = self.__get_feauture_value(
                 integral_image,
@@ -174,14 +180,21 @@ class HaarLikefeatures:
                 features[i][3]
             )
 
+        features_values = np.array(features_values, dtype=int)
+
         return features_values
 
 
-# utils = Utils()
+utils = Utils()
 # integral_image = utils.get_integral_image(
-#     np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+#     np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]]))
 # print(integral_image)
-haar_like_feautures = HaarLikefeatures()
-# print(feauture.__get_sum_in_rectangle(integral_image, 0, 0, 2, 2))
+haar_like_feautures = HaarLikeFeatures()
+# print(haar_like_feautures.get_sum_in_rectangle(integral_image, 0, 0, 1, 1))
+
+utils = Utils()
+integral_image = utils.get_integral_image(
+    np.array([[1, 5, 7], [9, 11, 8], [3, 2, 5]]))
+# integral_image = np.array(integral_image, dtype=int)
 print(haar_like_feautures.extract_features(
-    np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), 0, 0, 3, 3))
+    np.array([[1, 5, 7, 2], [9, 11, 8, 3], [3, 2, 5, 6], [10, 9, 8, 7]]), 0, 0, 4, 4))
