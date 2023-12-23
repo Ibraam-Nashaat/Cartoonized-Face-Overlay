@@ -115,6 +115,37 @@ class HaarLikeFeatures:
         feauture_value = white-black
         return feauture_value
 
+    def extract_features_as_labels(self, start_row, start_col, width, height):
+        features = np.array([]).reshape(0, 5)
+        for haar_type in range(len(HaarFeautureTypes)):
+            wnd_row, wnd_col = self.haar_window[haar_type]
+            h, w = wnd_row, wnd_col
+            while h <= height and w <= width:
+                for x in range(start_row, start_row+height-h+1):
+                    for y in range(start_col, start_col+width-w+1):
+                        features = np.append(
+                            features, [[haar_type, x, y, h, w]], axis=0)
+                h += wnd_row
+                w += wnd_col
+        return features
+    
+    def get_feautures_result(self, original_image, features):
+        features_values = np.zeros((len(features)))
+        integral_image = self.utils.get_integral_image(original_image)
+        for i in range(len(features)):
+            features_values[i] = self.__get_feauture_value(
+                integral_image,
+                HaarFeautureTypes(features[i][0]),
+                features[i][1],
+                features[i][2],
+                features[i][4],
+                features[i][3]
+            )
+
+        features_values = np.array(features_values, dtype=int)
+
+        return features_values
+    
     def extract_features(self, original_image, start_row, start_col, width, height):
         """
         Extracts the features from the sliding window that slides over the 

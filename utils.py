@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import random
 from multiprocessing import Pool
 import time
+from sklearn.model_selection import train_test_split
+
 class Utils:
     def get_integral_image(self, original_image):
         """
@@ -136,3 +138,32 @@ class Utils:
         print(f"Parallel processing finished in {time.time()-start_time} seconds")
         
         return np.array(result)
+    
+    def split_data(self, P, N, val_precent):
+        """
+        Split positive and negative samples into training and validation sets.
+        """
+        P_train, P_val = train_test_split(P, test_size=val_precent, shuffle=True)
+        N_train, N_val = train_test_split(N, test_size=val_precent, shuffle=True)
+        return P_train, P_val, N_train, N_val
+
+    def merge_P_N(self, P, N):
+        """
+        Concatenate positive and negative samples and create corresponding labels.
+
+        Parameters:
+        - P: array-like, positive samples
+        - N: array-like, negative samples
+
+        Returns:
+        - X: array, concatenated feature vectors
+        - y: array, corresponding labels (1 for positive, 0 for negative)
+        """
+        X = np.concatenate((P, N), axis=0)
+        y = np.concatenate((np.ones(P.shape[0]), np.zeros(N.shape[0])), axis=0)
+        # Shuffle the data
+        idx = np.arange(X.shape[0])
+        np.random.shuffle(idx)
+        X = X[idx]
+        y = y[idx]
+        return X, y

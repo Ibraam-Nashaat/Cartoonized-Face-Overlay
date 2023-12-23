@@ -9,7 +9,11 @@ class AdaBoostClassifier:
 
     def fit(self, X, y):
         n_samples, n_features = X.shape
-        w = np.ones(n_samples) / n_samples
+        n_pos = np.sum(y == 1)
+        n_neg = np.sum(y == 0)
+        w = np.ones(n_samples)
+        w[y == 1] *= 1 / (2 * n_pos)
+        w[y == 0] *= 1 / (2 * n_neg)
 
         for _ in range(self.n_estimators):
             model = DecisionTreeClassifier(max_depth=1)
@@ -27,8 +31,21 @@ class AdaBoostClassifier:
 
     def predict(self, X):
         predictions = np.zeros(X.shape[0])
-
         for model, alpha in zip(self.models, self.alphas):
+            print(model.predict(X))
             predictions += alpha * model.predict(X)
 
         return np.sign(predictions)
+    
+    def predict_th(self, X, th):
+        predictions = np.zeros(X.shape[0])
+
+        for model, alpha in zip(self.models, self.alphas):
+            h = model.predict(X)
+            h[h == 0] = -1
+            predictions += alpha * model.predict(X)
+        
+        predictions[predictions >= th] = 1
+        predictions[predictions < th] = 0
+
+        return predictions
