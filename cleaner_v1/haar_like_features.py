@@ -54,7 +54,7 @@ class HaarLikeFeatures:
             integral_image[start_row, start_col+w]
         return int(sum)
 
-    def __get_feauture_value(self, integral_image, feauture_type, start_row, start_col, w, h):
+    def get_feauture_value(self, integral_image, feauture_type, start_row, start_col, w, h):
         """
         Gets the value of a cerain haar feauture type
 
@@ -129,11 +129,11 @@ class HaarLikeFeatures:
                 w += wnd_col
         return features
     
-    def get_feautures_result(self, integral_image, features):
+    def get_feautures_result(self, image, features):
         features_values = np.zeros((len(features)))
         for i in range(len(features)):
-            features_values[i] = self.__get_feauture_value(
-                integral_image,
+            features_values[i] = self.get_feauture_value(
+                image,
                 HaarFeautureTypes(features[i][0]),
                 features[i][1],
                 features[i][2],
@@ -189,7 +189,7 @@ class HaarLikeFeatures:
         features_values = np.zeros((len(features)))
         integral_image = self.utils.get_integral_image(original_image)
         for i in range(len(features)):
-            features_values[i] = self.__get_feauture_value(
+            features_values[i] = self.get_feauture_value(
                 integral_image,
                 HaarFeautureTypes(features[i][0]),
                 features[i][1],
