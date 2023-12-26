@@ -131,10 +131,9 @@ class HaarLikeFeatures:
     
     def get_feautures_result(self, original_image, features):
         features_values = np.zeros((len(features)))
-        integral_image = self.utils.get_integral_image(original_image)
         for i in range(len(features)):
             features_values[i] = self.__get_feauture_value(
-                integral_image,
+                original_image,
                 HaarFeautureTypes(features[i][0]),
                 features[i][1],
                 features[i][2],

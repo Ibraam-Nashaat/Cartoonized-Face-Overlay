@@ -48,11 +48,12 @@ class HaarLikeFeatures:
         """
         start_row, start_col, w, h = \
             int(start_row), int(start_col), int(w), int(h)
+            
         sum = integral_image[start_row+h, start_col+w] + \
             integral_image[start_row, start_col] - \
             integral_image[start_row+h, start_col] - \
             integral_image[start_row, start_col+w]
-        return int(sum)
+        return sum
 
     def get_feauture_value(self, integral_image, feauture_type, start_row, start_col, w, h):
         """
