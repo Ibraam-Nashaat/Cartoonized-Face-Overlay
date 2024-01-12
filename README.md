@@ -1,5 +1,7 @@
 # Cartoonized Face Overlay (Viola Jones)
 
+## Pipeline
+![image](./docs/flowchart.png)
 ## Reference of Data
 
 ### CBCL FACE DATABASE #1:
